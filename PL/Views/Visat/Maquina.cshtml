@@ -1,0 +1,161 @@
+﻿@model ML.Producto
+@{
+    ViewBag.Title = "Maquina";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Maquina</h2>
+<h3>Selecciona un producto</h3>
+<hr />
+
+<div class="row">
+    @foreach (ML.Producto producto in Model.Productos)
+    {
+        <div class="col-md-3 col-sm-6">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@producto.Nombre</h5>
+                    <h6>$@producto.Precio</h6>
+                    <p class="card-text">Productos</p>
+                    <hr />
+                    <a class="btn btn-outline-success" onClick="showEntrega(@producto.Precio)">Comprar</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@*Modla*@
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" onclick="modalClose()">×</button>
+                <h4 class="modal-title">Monedas</h4>
+            </div>
+
+            <div class="modal-body">
+                <div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">$</span>
+                        <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)" id="txtIngreso">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                    <hr />
+                    <div class="mb-3 row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Total</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="txtCosto"  value="100">
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="mb-3 row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Ingresado</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="txtIngresado" value="">
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div  id="myForm" style="display: none;">
+                    <h6>Cambio</h6>
+                    <div class="mb-3 row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Cambio</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" placeholder="" id="txtCambio" style="height: 150px" ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success m-1" id="btnIngresar" onclick="ingresar()">Ingresar</button>
+                <button type="button" class="btn btn-success m-1" id="btnUpdate" onclick="modalClose()">Resumen</button>
+                <button type="button" class="btn btn-success m-1" id="btnUpdate" onclick="modalClose()">Salir</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+<script>
+    var total = 0;
+    var diferencia = 0;
+    var cambio = 0;
+    let valorActual = 0;
+    
+    function showEntrega(total) {
+        showModal();
+        $('#txtCosto').val(total); 
+        $('#txtIngresado').val("0");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        }
+    }
+    function showModal() {
+        $('#modal').modal("show");
+       
+    }
+
+    function modalClose() {  
+        $('#modal').modal("hide"); 
+        $('#txtCambio').val("");
+        $('#txtIngresado').val("");
+        $('#txtIngreso').val("");
+        $("#btnIngresar").prop("disabled", false);
+    }
+    function ingresar() {
+        var costo = $('#txtCosto').val();
+        var ingreso = $('#txtIngreso').val();
+        $('#txtIngreso').val("");
+        
+        if (ingreso == 100 || ingreso == 50 || ingreso == 10) {
+            total = parseInt(ingreso) + total;
+            $('#txtIngresado').val(total);
+        } else {
+            alert('Ingresa un moneda de valor valido')
+        }
+        if (costo == total) {
+            $("#btnIngresar").prop("disabled", true);
+            alert("Gracias por su compra")
+        } else if (costo < total) {
+            $("#btnIngresar").prop("disabled", true);
+            diferencia = total - costo;
+            myFunction();
+            cambio = diferencia;
+            do {
+                
+                if (cambio >= 100) {
+                    cambio = cambio - 100;
+                    
+                    $("#txtCambio").val(valorActual + "\n" + "100");
+                } else if (cambio >= 50) {
+                    cambio = cambio - 50;
+                   
+                    $("#txtCambio").val(valorActual + "\n" + "50");
+                } else if (cambio >= 10) {
+                    cambio = cambio - 10;
+                    
+                    $("#txtCambio").val(valorActual + "\n" + "10");
+                }
+                 valorActual = $("#txtCambio").val();
+                
+            } while (cambio > 0);
+            
+            
+        }
+        
+        
+    }
+    function myFunction() {
+        var x = document.getElementById("myForm");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+
+
+</script>
